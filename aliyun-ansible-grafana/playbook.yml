@@ -1,0 +1,12 @@
+---
+# playbook.yml
+- name: 'Provision Image'
+  hosts: default
+  become: true
+
+  roles:
+    - role: grafana.grafana.grafana
+      vars:
+        grafana_security:
+          admin_user: "admin"
+          admin_password: "admin"
