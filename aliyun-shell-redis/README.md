@@ -4,7 +4,7 @@
 使用以下工具构建 阿里云自定义镜像：
 
 - Packer
-    - Packer Builder Plugin [`alicloud-ecs`](https://github.com/hashicorp/packer-plugin-alicloud)
+    - Packer Builder [`alicloud-ecs`](https://github.com/hashicorp/packer-plugin-alicloud)
 
 在镜像中使用 Shell 命令安装 Redis 。
 
@@ -36,7 +36,7 @@ aliyun ecs DescribeImages \
     --ImageFamily 'acs:almalinux_8_9_x64'
 ```
 
- 6. 【可选】查询指定 实例规格(InstanceType) 是否有库存：
+6. 【可选】查询指定 实例规格(InstanceType) 是否有库存：
 
 ```bash
 ALICLOUD_REGION_ID="cn-hangzhou"
