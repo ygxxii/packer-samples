@@ -7,6 +7,10 @@ packer {
   }
 }
 
+local "timestamp" {
+   expression = formatdate("YYYY.MMDD.hh:mm:ss", timestamp())
+}
+
 variable "access_key" {
   type      = string
   default   = "${env("ALICLOUD_ACCESS_KEY_ID")}"
@@ -46,20 +50,19 @@ source "alicloud-ecs" "packer_aliyun_ecs" {
   image_force_delete           = true
   image_force_delete_snapshots = true
   ssh_username                 = "root"
+  tags                         = {
+    Environment  = "DEV"
+    Release-date = local.timestamp
+    Created-by   = "Packer"
+  }
 }
 
 build {
   sources = ["source.alicloud-ecs.packer_aliyun_ecs"]
-  
+
   provisioner "shell" {
-    environment_vars = [
-      "ALICLOUD_REGION_ID=${var.region}"
-    ]
     inline = [ <<EOF
     sleep 10
-    
-    echo " ====== Linux: Recording box generation date ====> "
-    date > /etc/vagrant_box_build_date
 
     echo " ====== DNF: Enable Extras REPO (to install epel-release) ====> "
     dnf config-manager --enable extras
@@ -76,40 +79,37 @@ build {
     dnf config-manager --set-disabled "epel-testing-modular*"
     dnf -y makecache
 
+    echo " ====== DNF: Install Hashicorp REPO ====> "
+    dnf config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+    dnf -y makecache
+
     echo " ====== DNF: Install required packages ====> "
     dnf -y install \
-        drpm \
-        unzip \
-        lrzsz \
         jq \
-        yum-utils \
         ansible \
-        python3-argcomplete
+        python3-argcomplete \
+        packer
 
     echo " ====== DNF: Install / Upgrade Aliyun Assist (云助手Agent) ====> "
     dnf -y install \
-        https://aliyun-client-assist-$ALICLOUD_REGION_ID.oss-$ALICLOUD_REGION_ID-internal.aliyuncs.com/linux/aliyun_assist_latest.rpm
+        https://aliyun-client-assist-${var.region}.oss-${var.region}-internal.aliyuncs.com/linux/aliyun_assist_latest.rpm
 
     echo " ====== Manual: Install Aliyun CLI ====> "
     curl -SL https://aliyuncli.alicdn.com/aliyun-cli-linux-latest-amd64.tgz -o /tmp/aliyun-cli-linux-latest-amd64.tgz
     tar xzf /tmp/aliyun-cli-linux-latest-amd64.tgz  -C /tmp
     install /tmp/aliyun /usr/local/bin
 
-    echo " ====== DNF: Install Hashicorp REPO ====> "
-    yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
-    dnf -y makecache
-
-    echo " ====== DNF: Install Packer ====> "
-    dnf -y install \
-        packer
+    echo " ====== Linux: Create Linux user ecs-user ====> "
+    useradd ecs-user
+    id ecs-user
 
     echo " ====== Alias: Create Packer alias ====> "
-    echo 'alias "packer=/usr/bin/packer"' >> ~/.bashrc
+    echo 'alias "packer=/usr/bin/packer"' >> /root/.bashrc
+    echo 'alias "packer=/usr/bin/packer"' >> /home/ecs-user/.bashrc
 
     echo " ====== Packer: Install Plugins ====> "
-    alias "packer=/usr/bin/packer"
-    packer plugins install github.com/hashicorp/alicloud
-    packer plugins install github.com/hashicorp/ansible
+    sudo -u ecs-user sh -c "cd /home/ecs-user; PACKER_LOG=1 /usr/bin/packer plugins install github.com/hashicorp/alicloud"
+    sudo -u ecs-user sh -c "cd /home/ecs-user; PACKER_LOG=1 /usr/bin/packer plugins install github.com/hashicorp/ansible"
     EOF
     ]
   }
