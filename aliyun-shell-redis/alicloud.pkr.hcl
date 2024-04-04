@@ -15,6 +15,7 @@ variable "access_key" {
 variable "secret_key" {
   type    = string
   default = "${env("ALICLOUD_ACCESS_KEY_SECRET")}"
+  sensitive = true
 }
 
 source "alicloud-ecs" "packer_aliyun_ecs" {
@@ -38,7 +39,10 @@ source "alicloud-ecs" "packer_aliyun_ecs" {
 
 build {
   sources = ["source.alicloud-ecs.packer_aliyun_ecs"]
+  
   provisioner "shell" {
     inline = ["sleep 10", "yum install redis -y"]
   }
+
+  post-processor "manifest" {}
 }
