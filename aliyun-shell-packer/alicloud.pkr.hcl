@@ -50,6 +50,7 @@ source "alicloud-ecs" "packer_aliyun_ecs" {
 
 build {
   sources = ["source.alicloud-ecs.packer_aliyun_ecs"]
+  
   provisioner "shell" {
     environment_vars = [
       "ALICLOUD_REGION_ID=${var.region}"
@@ -112,4 +113,6 @@ build {
     EOF
     ]
   }
+
+  post-processor "manifest" {}
 }
