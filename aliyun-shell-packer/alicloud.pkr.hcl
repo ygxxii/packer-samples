@@ -7,10 +7,6 @@ packer {
   }
 }
 
-local "timestamp" {
-   expression = formatdate("YYYY.MMDD.hh:mm:ss", timestamp())
-}
-
 variable "access_key" {
   type      = string
   default   = "${env("ALICLOUD_ACCESS_KEY_ID")}"
@@ -26,6 +22,10 @@ variable "region" {
   type    = string
   # default = "${env("ALICLOUD_REGION_ID")}"
   default = "cn-hongkong"
+}
+
+local "timestamp" {
+   expression = formatdate("YYYY.MMDD.hh:mm:ss", timestamp())
 }
 
 source "alicloud-ecs" "packer_aliyun_ecs" {
