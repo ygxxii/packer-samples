@@ -63,13 +63,19 @@ aliyun ecs DescribeAvailableResource \
 packer init
 ```
 
-4. 开始 Packer 构建：
+4. 校验 Packer Template `.pkr.hcl`：
+
+```bash
+packer validate .
+```
+
+5. 开始 Packer 构建：
 
 ```bash
 packer build .
 ```
 
-5. 查询 自定义镜像：
+6. 查询 自定义镜像：
 
 ```bash
 ALICLOUD_REGION_ID="cn-hangzhou"
