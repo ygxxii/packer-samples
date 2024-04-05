@@ -63,25 +63,31 @@ aliyun ecs DescribeAvailableResource \
 
 3. `cd` 到当前目录；
 
-4. 安装依赖的 Packer Plugins：
+4. 校验 Packer Template `.pkr.hcl`：
+
+```bash
+packer validate .
+```
+
+5. 安装依赖的 Packer Plugins：
 
 ```bash
 packer init
 ```
 
-5. 安装依赖的 Ansible Collections 和 Roles：
+6. 安装依赖的 Ansible Collections 和 Roles：
 
 ```bash
 ansible-galaxy install -r requirements.yml
 ```
 
-6. 开始 Packer 构建：
+7. 开始 Packer 构建：
 
 ```bash
 packer build .
 ```
 
-7. 查询 自定义镜像：
+8. 查询 自定义镜像：
 
 ```bash
 ALICLOUD_REGION_ID="cn-hangzhou"
