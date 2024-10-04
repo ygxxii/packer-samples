@@ -72,7 +72,7 @@ packer validate .
 5. 安装依赖的 Packer Plugins：
 
 ```bash
-packer init
+packer init .
 ```
 
 6. 安装依赖的 Ansible Collections 和 Roles：
