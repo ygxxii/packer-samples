@@ -25,7 +25,7 @@ variable "secret_key" {
 variable "region" {
   type    = string
   # default = "${env("ALICLOUD_REGION_ID")}"
-  default = "cn-hangzhou"
+  default = "cn-hongkong"
 }
 
 local "timestamp" {
@@ -39,7 +39,7 @@ source "alicloud-ecs" "packer_aliyun_ecs" {
   instance_type                = "ecs.e-c1m2.large"
   image_family                 = "acs:almalinux_8_9_x64"
   image_name                   = "packer_alma8_grafana"
-  
+
   skip_image_validation        = false
   system_disk_mapping {
     disk_category              = "cloud_essd"
@@ -49,6 +49,8 @@ source "alicloud-ecs" "packer_aliyun_ecs" {
   instance_name                = "Packer构建_临时实例_按量付费"
   internet_charge_type         = "PayByTraffic"
   image_description            = "Custom image created by Packer."
+  # image_copy_regions           = []
+  # image_copy_names             = []
   image_force_delete           = false
   image_force_delete_snapshots = false
   ssh_username                 = "root"
