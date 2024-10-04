@@ -60,7 +60,7 @@ aliyun ecs DescribeAvailableResource \
 3. 安装依赖的 Packer Plugins：
 
 ```bash
-packer init
+packer init .
 ```
 
 4. 校验 Packer Template `.pkr.hcl`：
