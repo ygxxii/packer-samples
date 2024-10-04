@@ -1,4 +1,4 @@
 
 ## Packer template samples
 
-一些 Packer Template 示例。
+Some Packer template samples used to setup test environment.
