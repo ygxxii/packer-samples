@@ -69,7 +69,7 @@ build {
 
     echo " ====== DNF: Install EPEL REPO ====> "
     dnf -y install epel-release
-    
+
     echo " ====== DNF: Config EPEL REPO Mirror ====> "
     sed -e 's|^metalink=|#metalink=|g' \
       -e 's|^#baseurl=https\?://download.*/pub/epel/|baseurl=http://mirrors.cloud.aliyuncs.com/epel/|g' \
@@ -86,6 +86,8 @@ build {
     echo " ====== DNF: Install required packages ====> "
     dnf -y install \
         jq \
+        lrzsz \
+        unzip \
         ansible \
         python3-argcomplete \
         packer
@@ -103,11 +105,22 @@ build {
     useradd ecs-user
     id ecs-user
 
+    echo " ====== Linux: Import SSH Public Key (ecs-user) ====> "
+    mkdir -p /home/ecs-user/.ssh
+    printf "\n" >> /home/ecs-user/.ssh/authorized_keys
+    echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILb+YSzXxLbHm6Z-VOzJUq3o14v1zmNz5u892hxo1jNe SysOps@company' >> /home/ecs-user/.ssh/authorized_keys
+    printf "\n" >> /home/ecs-user/.ssh/authorized_keys
+    chmod 700 /home/ecs-user/.ssh
+    chmod 600 /home/ecs-user/.ssh/authorized_keys
+    chown -R ecs-user:ecs-user /home/ecs-user/.ssh
+
     echo " ====== Alias: Create Packer alias ====> "
+    printf "\n" >> /root/.bashrc
     echo 'alias "packer=/usr/bin/packer"' >> /root/.bashrc
+    printf "\n" >> /home/ecs-user/.bashrc
     echo 'alias "packer=/usr/bin/packer"' >> /home/ecs-user/.bashrc
 
-    echo " ====== Packer: Install Plugins ====> "
+    echo " ====== Packer: Install Plugins (ecs-user) ====> "
     sudo -u ecs-user sh -c "cd /home/ecs-user; PACKER_LOG=1 /usr/bin/packer plugins install github.com/hashicorp/alicloud"
     sudo -u ecs-user sh -c "cd /home/ecs-user; PACKER_LOG=1 /usr/bin/packer plugins install github.com/hashicorp/ansible"
     EOF
